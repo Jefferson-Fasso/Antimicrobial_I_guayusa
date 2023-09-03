@@ -1,0 +1,292 @@
+---
+title: "Actividad antimicrobiana de extracto hidroalcohólico de hojas de *I. guayusa*"
+date: "2023-09-01"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+usethis::git_vaccinate()
+
+```
+
+# Objetivo general
+
+El presente trabajo tiene el objetivo de evaluar la actividad antimicrobiana de extractos hidroalcohólicos de hojas de *I. guayusa* a dos edades de la planta (especímenes de 4-6 años y 8-10 años) y dos exposiciones de luz solar por cada edad (entorno de 65-190 lux y 200-425 lux).
+
+# Procesamiento de datos
+
+Los datos fueron obtenidos con el software [ImageJ](https://imagej.nih.gov/ij/index.html) 1.53k v (Wayne Rasband, National Institutes of Health, Maryland, USA) y ordenados en Excel versión 2108.
+
+## Cargado de datos
+
+Las librerías R usadas se enlistan a continuación:
+
+```{r bibliotecas, echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
+
+# Cargado de la biblioteca ggplot2
+library(ggplot2)
+
+# Instalación y cargado de la biblioteca agricolae
+#install.packages("agricolae", repos = "https://cran.r-project.org")
+library(agricolae)
+
+# Instalación y cargado de la biblioteca ggbreak
+#remotes::install_github("YuLab-SMU/ggbreak")
+library(ggbreak)
+
+```
+
+Establecimiento del directorio de trabajo.
+
+```{r directorio}
+
+ppath <- "C:/Users/F4ss0/Documents/Ikiam21062022/Proyecto Guayusa/Antimicrobial_I_guayusa/"
+
+```
+
+Se cargó los datos almcenados en formato Excel para convertilos en objetos R (DataFrame). Para ello se usó una variable por cada microorganismo.
+
+```{r data}
+
+# Para B. subtilis
+B_subtilis <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_B.xlsx", 3))
+
+# Para S. aureus
+S_aureus <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_B.xlsx", 4))
+
+# Para K. pneumoniae
+K_pneumoniae <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_B.xlsx", 5))
+
+```
+
+## Boxplot
+
+A continuación se extraen los diferentes factores para ANOVA multifactorial por cada microorganismo.
+
+```{r factores}
+
+# Para B. subtilis
+dmso_bs <- B_subtilis[c(1:3),1]
+gtm_bs  <- B_subtilis[c(1:3),2]
+neg0_bs <- B_subtilis[c(1:3),3]
+pos0_bs <- B_subtilis[c(1:3),4]
+neg2_bs <- B_subtilis[c(1:3),5]
+pos2_bs <- B_subtilis[c(1:3),6]
+
+# Para S. aureus
+dmso_sa <- S_aureus[c(1:3),1]
+amp_sa  <- S_aureus[c(1:3),2]
+neg0_sa <- S_aureus[c(1:3),3]
+pos0_sa <- S_aureus[c(1:3),4]
+neg2_sa <- S_aureus[c(1:3),5]
+pos2_sa <- S_aureus[c(1:3),6]
+
+# Para K. pneumoniae
+dmso_kp <- K_pneumoniae[c(1:3),1]
+gtm_kp  <- K_pneumoniae[c(1:3),2]
+neg0_kp <- K_pneumoniae[c(1:3),3]
+pos0_kp <- K_pneumoniae[c(1:3),4]
+neg2_kp <- K_pneumoniae[c(1:3),5]
+pos2_kp <- K_pneumoniae[c(1:3),6]
+
+```
+
+Determinación del número de réplicas (mínimo 3 réplicas).
+
+```{r muestreo}
+
+n_sample  <- length(neg0_bs)
+
+```
+
+Extracción de datos para los boxplot.
+
+```{r muestras}
+
+# Para B. subtilis
+halo_bs <- c(dmso_bs,
+             gtm_bs,
+             neg0_bs,
+             pos0_bs,
+             neg2_bs,
+             pos2_bs)
+extract_bs <- c(rep("DMSO",n_sample),
+                rep("Gentamicina",n_sample),
+                rep("4-6 años en sombra",n_sample),
+                rep("4-6 años en luz",n_sample),
+                rep("8-10 años en sombra",n_sample),
+                rep("8-10 años en luz",n_sample))
+datos_bs <- data.frame(extract_bs,halo_bs)
+
+# Para S. aureus
+halo_sa <- c(dmso_sa,
+             amp_sa,
+             neg0_sa,
+             pos0_sa,
+             neg2_sa,
+             pos2_sa)
+extract_sa <- c(rep("DMSO",n_sample),
+                rep("Ampicilina",n_sample),
+                rep("4-6 años en sombra",n_sample),
+                rep("4-6 años en luz",n_sample),
+                rep("8-10 años en sombra",n_sample),
+                rep("8-10 años en luz",n_sample))
+datos_sa <- data.frame(extract_sa,halo_sa)
+
+# Para K. pneumoniae
+halo_kp <- c(dmso_kp,
+             gtm_kp,
+             neg0_kp,
+             pos0_kp,
+             neg2_kp,
+             pos2_kp)
+extract_kp <- c(rep("DMSO",n_sample),
+                rep("Gentamicina",n_sample),
+                rep("4-6 años en sombra",n_sample),
+                rep("4-6 años en luz",n_sample),
+                rep("8-10 años en sombra",n_sample),
+                rep("8-10 años en luz",n_sample))
+datos_kp <- data.frame(extract_kp,halo_kp)
+
+```
+
+Graficación de boxplot.
+
+
+```{r cajas}
+
+# Para B. subtilis
+bx_bs <- ggplot(datos_bs,aes(x=extract_bs,y=halo_bs,fill=extract_bs)) +
+  geom_boxplot() +
+  scale_y_break(c(8.25, 21.5), scales = 0.5) +
+  ggtitle("B. subtilis") +
+  guides(x=guide_axis(title = NULL), y=guide_axis(title = NULL), fill=guide_legend(title="Muestras")) +
+  xlab(NULL) + ylab(guide_axis(title = "Halos (mm)")) +
+  theme(plot.title = element_text(face="italic"), axis.text.x=element_text(angle=45, hjust=1))
+
+# Para S. aureus
+bx_sa <- ggplot(datos_sa,aes(x=extract_sa,y=halo_sa,fill=extract_sa)) +
+  geom_boxplot() +
+  scale_y_break(c(6.5, 22.95), scales = 0.5) +
+  ggtitle("S. aureus") +
+  guides(x=guide_axis(title = NULL), y=guide_axis(title = NULL), fill=guide_legend(title="Muestras")) +
+  xlab(NULL) + ylab(guide_axis(title = "Halos (mm)")) +
+  theme(plot.title = element_text(face="italic"), axis.text.x=element_text(angle=45, hjust=1))
+
+# Para K. pneumoniae
+bx_kp <- ggplot(datos_kp,aes(x=extract_kp,y=halo_kp,fill=extract_kp)) +
+  geom_boxplot() +
+  scale_y_break(c(7.75, 15), scales = 0.5) +
+  ggtitle("K. pneumoniae") +
+  guides(x=guide_axis(title = NULL), y=guide_axis(title = NULL), fill=guide_legend(title="Muestras")) +
+  xlab(NULL) + ylab(guide_axis(title = "Halos (mm)")) +
+  theme(plot.title = element_text(face="italic"), axis.text.x=element_text(angle=45, hjust=1))
+
+bx_bs
+bx_sa
+bx_kp
+
+```
+
+## Homogeneidad de varianza
+
+Verificación de la homogeneidad de las variancias par ANOVA.
+
+```{r bartlett1}
+
+# Prueba para homogenidad de varianzas para B. subtilis
+bartlett.test(halo_bs~extract_bs,data = datos_bs)
+
+```
+
+Como el p-value es 0.0774, y éste es un valor superior de 0.05, aceptamos la hipótesis nula (H0). Esto nos indica que las muestras presentan varianzas semejantes.
+
+```{r bartlett2}
+
+# Prueba para homogenidad de varianzas para S. aureus
+bartlett.test(halo_sa~extract_sa,data = datos_sa)
+
+```
+
+Como el p-value es 0.3023, y éste es un valor superior de 0.05, aceptamos la hipótesis nula (H0). Esto nos indica que las muestras presentan varianzas semejantes.
+
+```{r bartlett3}
+
+# Prueba para homogenidad de varianzas para K. pneumoniae
+bartlett.test(halo_kp~extract_kp,data = datos_kp)
+```
+
+Como el p-value es 0.1064, y éste es un valor superior de 0.05, aceptamos la hipótesis nula (H0). Esto nos indica que las muestras presentan varianzas semejantes.
+
+## ANOVA
+
+Modelo de regresión para ANOVA para aquellos microorganismos que mostraron homocedasticidad de varianza.
+
+```{r logit}
+
+# Regresión Logit para B. subtilis (No aplica)
+mylogit_bs <- glm(halo_bs~extract_bs,data = datos_bs)
+
+# Regresión Logit para S. aureus
+mylogit_sa <- glm(halo_sa~extract_sa,data = datos_sa)
+
+# Regresión Logit para K. pneumoniae
+mylogit_kp <- glm(halo_kp~extract_kp,data = datos_kp)
+
+```
+
+Se procede a realizar el test de ANOVA.
+
+```{r anova}
+
+# Regresión Logit para B. subtilis (No aplica)
+anova(mylogit_bs,test="LRT")
+
+# Regresión Logit para S. aureus
+anova(mylogit_sa,test="LRT")
+
+# Regresión Logit para K. pneumoniae
+anova(mylogit_kp,test="LRT")
+
+```
+
+## Prueba de tukey
+
+```{r tukey}
+
+# Para B. subtilis (No aplica)
+modelo_bs <- aov(halo_bs~extract_bs,data = datos_bs)
+tukey_bs <- HSD.test(modelo_bs,"extract_bs", group=TRUE,console=TRUE)
+plot(tukey_bs,
+     cex.names=0.55,
+     ylab = "Diferencia de medias",
+     main="B. subtilis",
+     font.main=3)
+
+# Para S. aureus
+modelo_sa <- aov(halo_sa~extract_sa,data = datos_sa)
+tukey_sa <- HSD.test(modelo_sa,"extract_sa", group=TRUE,console=TRUE)
+plot(tukey_sa,
+     cex.names=0.55,
+     ylab = "Diferencia de medias",
+     main="S. aureus",
+     font.main=3)
+
+# Para K. pneumoniae
+modelo_kp <- aov(halo_kp~extract_kp,data = datos_kp)
+tukey_kp <- HSD.test(modelo_kp,"extract_kp", group=TRUE,console=TRUE)
+plot(tukey_kp,
+     cex.names=0.5,
+     ylab = "Diferencia de medias",
+     main="K. pneumoniae",
+     font.main=3)
+
+```
+
+
+
