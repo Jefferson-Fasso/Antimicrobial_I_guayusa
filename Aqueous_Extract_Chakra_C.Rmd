@@ -9,8 +9,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
 usethis::git_vaccinate()
+
 ```
 
 # Objetivo general
@@ -53,13 +55,13 @@ Se cargó los datos almcenados en formato Excel para convertilos en objetos R (D
 ```{r data}
 
 # Para B. subtilis
-B_subtilis <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O.xlsx", 3))
+B_subtilis <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_C.xlsx", 3))
 
 # Para S. aureus
-S_aureus <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O.xlsx", 4))
+S_aureus <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_C.xlsx", 4))
 
 # Para K. pneumoniae
-K_pneumoniae <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O.xlsx", 5))
+K_pneumoniae <- data.frame(readxl::read_excel("Data/Antimicrobial_H2O_Chakra_C.xlsx", 5))
 
 ```
 
@@ -173,7 +175,7 @@ bartlett.test(halo_bs~extract_bs,data = datos_bs)
 
 ```
 
-Como el p-value es 0.02479, y éste es un valor menor de 0.05, rechazamos la hipótesis nula (H0). Esto nos indica que las muestras presentan varianzas diferentes.
+Como el p-value es 0.1386, y éste es un valor superior de 0.05, aceptamos la hipótesis nula (H0). Esto nos indica que las muestras presentan varianzas semejantes.
 
 ```{r bartlett2}
 
@@ -199,7 +201,7 @@ Modelo de regresión para ANOVA para aquellos microorganismos que mostraron homo
 ```{r logit}
 
 # Regresión Logit para B. subtilis (No aplica)
-#mylogit_bs <- glm(halo_bs~extract_bs,data = datos_bs)
+mylogit_bs <- glm(halo_bs~extract_bs,data = datos_bs)
 
 # Regresión Logit para S. aureus
 mylogit_sa <- glm(halo_sa~extract_sa,data = datos_sa)
@@ -214,7 +216,7 @@ Se procede a realizar el test de ANOVA.
 ```{r anova}
 
 # Regresión Logit para B. subtilis (No aplica)
-#anova(mylogit_bs,test="LRT")
+anova(mylogit_bs,test="LRT")
 
 # Regresión Logit para S. aureus
 anova(mylogit_sa,test="LRT")
@@ -229,20 +231,19 @@ anova(mylogit_kp,test="LRT")
 ```{r tukey}
 
 # Para B. subtilis (No aplica)
-#modelo_bs <- aov(halo_bs~extract_bs,data = datos_bs)
-#tukey_bs <- HSD.test(modelo,"extract_bs", group=TRUE,console=TRUE,
-                  #main="B. subtilis")
-#plot(tukey_bs)
+modelo_bs <- aov(halo_bs~extract_bs,data = datos_bs)
+tukey_bs <- HSD.test(modelo_bs,"extract_bs", group=TRUE,console=TRUE)
+plot(tukey_bs,  cex.names=0.55, ylab = "Diferencia de medias", main="B. subtilis")
 
 # Para S. aureus
 modelo_sa <- aov(halo_sa~extract_sa,data = datos_sa)
-tukey_sa <- HSD.test(modelo_sa,"extract_sa", group=TRUE,console=TRUE, main="S. aureus")
-plot(tukey_sa, cex.names=0.55, ylab = "Diferencia de medias")
+tukey_sa <- HSD.test(modelo_sa,"extract_sa", group=TRUE,console=TRUE)
+plot(tukey_sa, cex.names=0.55, ylab = "Diferencia de medias", main="S. aureus")
 
 # Para K. pneumoniae
 modelo_kp <- aov(halo_kp~extract_kp,data = datos_kp)
-tukey_kp <- HSD.test(modelo_kp,"extract_kp", group=TRUE,console=TRUE, main="K. pneumoniae")
-plot(tukey_kp, cex.names=0.5, ylab = "Diferencia de medias")
+tukey_kp <- HSD.test(modelo_kp,"extract_kp", group=TRUE,console=TRUE)
+plot(tukey_kp, cex.names=0.5, ylab = "Diferencia de medias", main="K. pneumoniae")
 
 ```
 
