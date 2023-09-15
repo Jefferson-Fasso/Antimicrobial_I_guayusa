@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<parameters>
+<parameter name="ANALOG_SEARCH">0</parameter>
+<parameter name="Carbon_Marker_File">f.F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/n_Alkanes_RT.csv;</parameter>
+<parameter name="FILTER_LIBRARY">0</parameter>
+<parameter name="FILTER_PRECURSOR_WINDOW">0</parameter>
+<parameter name="FILTER_SNR_PEAK_INT">0.0</parameter>
+<parameter name="FILTER_STDDEV_PEAK_INT">0.0</parameter>
+<parameter name="FORCE_EXACT_MATCH">1</parameter>
+<parameter name="MAXIMUM_COMPONENT_SIZE">0</parameter>
+<parameter name="MAX_SHIFT">500</parameter>
+<parameter name="MAX_SHIFT_MASS">100.0</parameter>
+<parameter name="MIN_MATCHED_PEAKS">6</parameter>
+<parameter name="MIN_PEAK_INT">0.0</parameter>
+<parameter name="PAIRS_MIN_COSINE">0.7</parameter>
+<parameter name="QUANT_TABLE_SOURCE">MSDIAL</parameter>
+<parameter name="SCORE_THRESHOLD">0.7</parameter>
+<parameter name="SEARCH_LIBQUALITY">1</parameter>
+<parameter name="TOPK">10</parameter>
+<parameter name="TOP_K_RESULTS">1</parameter>
+<parameter name="WINDOW_FILTER">0</parameter>
+<parameter name="desc">GC-MS of Guayusa (MS-DIAL test)</parameter>
+<parameter name="email">jefferson.pastuna@est.ikiam.edu.ec</parameter>
+<parameter name="library_on_server">d.CCMS_SpectralLibraries/GNPS_GC_Libraries;</parameter>
+<parameter name="quantification_table">f.F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/Height_1_20239131053.txt;</parameter>
+<parameter name="runKovats">on</parameter>
+<parameter name="spec_on_server">f.F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/Spectrum_1_20239131053.mgf;</parameter>
+<parameter name="task">6c604666e4ee45298ba704a3ffdca85b</parameter>
+<parameter name="tolerance.Ion_tolerance">0.2</parameter>
+<parameter name="tolerance.PM_tolerance">450</parameter>
+<parameter name="upload_file_mapping">spec-00000.mgf|F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/Spectrum_1_20239131053.mgf</parameter>
+<parameter name="upload_file_mapping">lib-00000.mgf|CCMS_SpectralLibraries/GNPS_GC_Libraries/GC-MONA/GC-MONA.mgf</parameter>
+<parameter name="upload_file_mapping">lib-00001.mgf|CCMS_SpectralLibraries/GNPS_GC_Libraries/GC-FIEHN/GC-FIEHN.mgf</parameter>
+<parameter name="upload_file_mapping">lib-00002.mgf|CCMS_SpectralLibraries/GNPS_GC_Libraries/GC-BORISOV-COMPILATION/GC-BORISOV-COMPILATION.mgf</parameter>
+<parameter name="upload_file_mapping">lib-00003.mgf|CCMS_SpectralLibraries/GNPS_GC_Libraries/GC-HMDB/GC-HMDB.mgf</parameter>
+<parameter name="upload_file_mapping">lib-00004.mgf|CCMS_SpectralLibraries/GNPS_GC_Libraries/GC-VOCBINBASE/GC-VOCBINBASE.mgf</parameter>
+<parameter name="upload_file_mapping">quantification_table-00000.txt|F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/Height_1_20239131053.txt</parameter>
+<parameter name="upload_file_mapping">Carbon_Marker_File-00000.csv|F4ss0/I_guayusa/GCMS/MSDIAL_List_Peak/n_Alkanes_RT.csv</parameter>
+<parameter name="user">F4ss0</parameter>
+<parameter name="uuid">1E5B4097-ABE3-0001-6068-17D6B316DD80</parameter>
+<parameter name="workflow">MOLECULAR-LIBRARYSEARCH-GC</parameter>
+<parameter name="workflow_version">release_30</parameter>
+</parameters>
