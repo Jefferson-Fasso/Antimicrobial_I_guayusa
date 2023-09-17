@@ -15,19 +15,19 @@ usethis::git_vaccinate()
 
 ```
 
-## Introducci[on
+## Introducción
 
-El objetivo de este Script R fue el an[alisis estad[istico de extracto acuoso de *Ilex guayusa*. En cada paso se detalla una descripci[on del c[odigo usado.
+El objetivo de este Script R fue registrar el análisis estadístico de extractos acuosos de *Ilex guayusa*. En cada paso se detalla una descripción de lo que hacen los código usados.
 
-El flujo de trabajo usado fue tomado de ["notame": Workflow for Non-Targeted LC–MS Metabolic Profiling](https://doi.org/10.3390/metabo10040135). El cual ofece una gran variedad de herrmientas para el pretratamiento de datos antes del an[alisis estad[istico.
+El flujo de trabajo usado fue tomado de ["notame": Workflow for Non-Targeted LC–MS Metabolic Profiling](https://doi.org/10.3390/metabo10040135). El cual ofece una gran variedad de herrmientas para el pretratamiento de datos previo el análisis estadístico.
 
 ## Antes de empezar
 
-El paquete "notame" acepta lista de picos cromatogr[aficos provenientes de softwares como MZMine, MSDial, entre otros. En este caso la lista de picos cromatogr[aficos fue obtenido mediante MZmine. El archivo (*.csv) fue acodicionado para el paquete "notame".
+El paquete "notame" acepta lista de picos cromatográficos provenientes de softwares como MZMine, MSDial, entre otros. En este caso la lista de picos cromatográficos fue obtenido mediante MZmine. El archivo (*.csv) fue acondicionado para que pueda ser leído por el paquete "notame".
 
-## Fkujo de tranajo Notame
+## Flujo de trabajo Notame
 
-El primer paso fue la intalaci[on del paquete notame y sus paquetes dependientes.
+El primer paso fue la instalación del paquete “notame” y sus paquetes dependientes.
 
 ```{r echo=TRUE, message=FALSE}
 
@@ -45,18 +45,18 @@ install_dependencies
 
 ```
 
-Luego, se cre[o una ruta general de trabajo y se abri[o un archivo (*.txt) para registrar el historial de los funciones "notame".
+Luego, se creó una ruta general de trabajo y un archivo (*.txt) para registrar el historial de las funciones "notame" usadas.
 
 ```{r echo=TRUE, message=TRUE, warning=FALSE, error=FALSE}
 
 # Main path
-ppath <- "F:/Jefferson-Pastuna/Tesis_Guayusa/GCMS_data_to_pay/Antimicrobial_I_guayusa/"
+ppath <- "C:/Users/F4ss0/Documents/Ikiam21062022/Proyecto Guayusa/Antimicrobial_I_guayusa/"
 # Log system
 init_log(log_file = paste0(ppath, "Result/GCMS/GCMS_log.txt"))
 
 ```
 
-Lo siguiente fue cargar la lista de picos modificado de MZmine.
+Lo siguiente fue cargar el libro Excel (*.xlsx) con la lista de picos obtenida en MZmine.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -66,7 +66,7 @@ data <- read_from_excel(file = "Data/Guayusa_H2O_GCMS_QC_and_Samples_to_R.xlsx",
 
 ```
 
-Una vez le[idos los datos, el siguiente paso es agrupar la informaci[on.
+Una vez leído los datos, el siguiente paso fue agrupar la información mediante la función construct_metabosets de “notame”.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -77,7 +77,7 @@ modes <- construct_metabosets(exprs = data$exprs,
 
 ```
 
-Podemos realizar unos estad[isticos antes de proceder con el pretratamiento "notame".
+Podemos visualizar los datos mediante un PCA y gráfico de cajas antes de proceder con el pretratamiento de "notame".
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -92,7 +92,7 @@ raw_pca <- plot_pca(mode_test,
                        center = TRUE,
                        shape = "Group",
                        color = "Group")
-# Package to plots visualization in a same windows
+# Package to plots visualization in same windows
 #if (!requireNamespace("devtools", quietly = TRUE)) {
 #  install.packages("devtools")
 #}
@@ -103,9 +103,9 @@ raw_pca + raw_bp
 
 ```
 
-## Preprocessing
+## Preprocesamiento
 
-El primer paso del preprocesamiento es reemplazar valor de como cero por NA.
+El primer paso del preprocesamiento fue reemplazar valores cero por NA.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -116,7 +116,7 @@ mode <- mark_nas(mode, value = 0)
 
 ```
 
-Luego, las características con una tasa de detección baja primero se marcan y luego se pueden eliminar. El paquete "notame" emplea dos criterios para seleccionar estas características. Primero, es la presencia de picos cromatogr[aficos en un porcentaje en el control de calidad y luego la presencia de picos cromatogr[aficos en un porcentaje dentro de un grupo/clase de la muestra.
+Luego, los picos cromatográficos con una tasa de detección baja serán marcadas y luego se puede decidir en eliminarlos. El paquete "notame" emplea dos criterios para seleccionar estos picos cromatográficos. Primero, es la presencia de picos cromatográficos en las inyecciones del control de calidad y segundo, la presencia de picos cromatográficos en las inyecciones réplicas de los grupos/clases de las muestras.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -132,9 +132,9 @@ visualizations(mode, prefix = paste0(ppath, "Figure/GCMS/", "Low_Detection"))
 
 ```
 
-Con estos valores, los picos cromatogr[aficos que no se detectaron en el 70 % de las inyecciones del control de calidad y el 70 % de los grupos de muestra se marcarán como una tasa de detección baja.
+Con estos valores, aquellos picos cromatográficos que no se detectaron en el 70 % de las inyecciones del control de calidad y el 80 % de los grupos de muestra se marcarán con la etiqueta “low_detection”.
 
-El siguiente paso para el preprocesamiento corresponde a la corrección de Drift. La corrección de Drift se puede aplicar mediante una regresión spline cúbica suavizada.
+El siguiente paso para el preprocesamiento corresponde a la corrección del efecto Drift (pérdida de intensidad de los picos propio del espectrómetro de masas). El efecto Drift se corrigió mediante regresión cúbica.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -145,7 +145,7 @@ corrected <- flag_quality(corrected, condition = "RSD_r < 0.3 & D_ratio_r < 0.6"
 
 ```
 
-Then we can visualize the data after drift correction.
+Podemos visualizar los datos tras la corrección del efecto Drift.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -163,7 +163,7 @@ corr_pca + corr_bp
 
 ```
 
-A continuaci[on los contaminantes de acuerdo con el blanco de procesamiento sr[an removidos.
+A continuación, los contaminantes de acuerdo con el blanco de procesamiento serán removidos. Una vez eliminado los picos cromatográficos contaminantes, el blanco será excluido en los análisis posteriores.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -185,7 +185,7 @@ visualizations(corrected_no_blank, prefix = paste0(ppath, "Figure/GCMS/", "No_Bl
 
 ```
 
-El siguente paso remuevo los QC, ya que, no ser[a necesaro en an[alisis posteriores.
+El siguiente paso remueve los QC, ya que, no será necesario en análisis posteriores.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -193,7 +193,7 @@ corrected_no_qc <- drop_qcs(corrected_no_blank)
 
 ```
 
-A contimuación se visualiza los datos sin los QC.
+A continuación, se visualizan los datos sin los QC.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -211,7 +211,7 @@ no_qc_pca + no_qc_bp
 
 ```
 
-El siguiente paso crea clusters. Este paso reduce el n[umero de picos cromatogr[aficos ya que correlaciona posibles gragmentos debido a la ionizaci[onde 70 eV mediante impacto de electrones (EI).
+El siguiente paso crea clústeres. Este paso reduce el número de picos cromatográficos ya que, correlaciona posibles fragmentos de una misma molécula debido a la ionización EI (Impacto de Electrones) de 70 eV.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -227,7 +227,7 @@ compressed <- compress_clusters(clustered)
 
 ```
 
-Podemos inspecionar los datos tras la b[usqueda de clusters.
+Podemos visualizar los datos tras la búsqueda de clústeres.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -245,7 +245,7 @@ compr_pca + compr_bp
 
 ```
 
-En el siguiente paso se imputar[a los datos faltantes.
+En el siguiente paso imputará valores faltantes en el set de datos.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -273,7 +273,7 @@ imp_pca + imp_bp
 
 ```
 
-Finally the data is ready to be exported and proceed with the statistical analysis.
+Finalmente, los datos están listos para ser explotados y usados en análisis posteriores.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -281,9 +281,9 @@ save(imputed, file = paste0(ppath, "Result/GCMS/Notame_GCMS_output.RData"))
 
 ```
 
-# PCA plots
+# Análisis de Componentes Principales
 
-Droping flagged features
+En este paso eliminamos aquellos picos que se hayan etiquetado durante los controles de calidad mediante el paquete de R “notame”.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -296,7 +296,7 @@ pheno_data <- no_flag@phenoData@data
 
 ```
 
-Preparing data and transposing feature table.
+Preparación de datos.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -309,7 +309,7 @@ ei_pca <- prcomp(transp_table, center = TRUE, scale. = TRUE)
 
 ```
 
-Plotting PCA results.
+Gráfico del plano principal del PCA.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -329,11 +329,11 @@ ggplot(scores,
   #geom_text(label=pheno_data$Group, nudge_x = 1, nudge_y = 1, show.legend = FALSE)+
   theme_classic()
 # Save plot
-ggsave('Result/GCMS/GCMS_PCA.png', width = 5, height = 4, device='png', dpi="print")
+ggsave('Result/GCMS/GCMS_PCA.png', width = 6, height = 3, device='png', dpi="print")
 
 ```
 
-Plotting loading results.
+Gráfico del círculo de correlaciones del PCA.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -342,7 +342,7 @@ loadings <- ei_pca$rotation %>%           # Extract loadings
 
 ```
 
-Creating an artificial table with Feature name and Compound column.
+A continuación, se añade los metabolitos identificados en el círculo de correlaciones del PCA. En azul metabolitos con nivel de identificación 1 y en rojo metabolitos con nivel de identificación 2.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -356,22 +356,26 @@ ggplot(loadings, aes(PC1, PC2)) +
   theme_classic() + 
   geom_point(data = ei_compouds, size = 1) +
   ggrepel::geom_label_repel(data = ei_compouds,
-                            aes(label = Metabolite_name),
-                            box.padding = 0.8,
-                            label.padding = 0.3,
-                            label.r = 0.3,
-                            cex = 3) +
+                            aes(label = Metabolite_Code),
+                            max.overlaps = 40,
+                            box.padding = 0.5,
+                            label.padding = 0.25,
+                            label.r = 0.5,
+                            cex = 3.5) +
+  geom_point(data = ei_compouds,
+             aes(shape = Nivel, color = Nivel),
+             size = 3) +
   guides(x=guide_axis(title = "PC1 (52.92 %)"),
          y=guide_axis(title = "PC2 (13.94 %)")) +
   ggsci::scale_color_aaas()
 # Save plot
-ggsave('Result/GCMS/GCMS_Loadings.png', width = 20, height = 15, device='png', dpi="print")
+ggsave('Result/GCMS/GCMS_Loadings.png', width = 11, height = 9, device='png', dpi= 300)
 
 ```
 
-# Heat map plot
+# Mapa de calor
 
-ComplexHeatmap package and dependency installation.
+Instalación del paquete ComplexHeatmap y otros paquetes dependentes.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 
@@ -386,7 +390,7 @@ library(ComplexHeatmap)
 #  install.packages("devtools")
 #}
 #devtools::install_github("jokergoo/colorRamp2")
-library(colorRamp2)
+library("colorRamp2")
 
 # Cowplot package installation
 #install.packages("cowplot")
@@ -394,11 +398,11 @@ library(cowplot)
 
 ```
 
-Extracting and loaded of identified metabolites abundance.
+Extracción y cargado de la abundancia de los metabolitos identificados.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
-# Metabolite name table without internal standard
+# Metabolite name table
 metab_name_hm <- readxl::read_excel("Data/GCMS_Metabolites.xlsx", 5)
 # Add identified metabolite to "notame" output
 add_met <- join_fData(no_flag, metab_name_hm)
@@ -413,11 +417,11 @@ hm_fdata <- raw_hm@featureData@data
 
 ```
 
-Scaling, row and top heatmap anotation.
+Escalado de datos y anotaciones (superior y laterales) para el gráfico del mapa de calor.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
-set.seed(1540)
+set.seed(810)
 # Logarithmic scale
 hm_scl <- log10(hm_height)
 rownames(hm_scl) <- hm_fdata$Metabolite_name
@@ -445,7 +449,7 @@ top_info_ann <- HeatmapAnnotation(`Grupo` = hm_pdata$Grupo,
                                   show_legend=F, 
                                   border = TRUE)
 # Color scale
-mycol <- colorRamp2(c(2, 4, 6),
+mycol <- colorRamp2(c(2, 3.5, 6),
                     c("blue", "white", "red"))
 # Heatmap matrix plotting
 hm_plot <- Heatmap(hm_scl,
@@ -462,34 +466,34 @@ hm_plot
 
 ```
 
-Adding legends to heatmap.
+Agregar leyendas al mapa de calor.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
 # Color scale legend
 lgd1 <- Legend(col_fun = mycol,
-               title = "log10 abundance",
+               title = "Abundancia log10",
                at = seq(6),
                direction = "horizontal" )
 # Group legend
-lgd2 <- Legend(labels = gt_render(c("4-6 años luz",
-                                    "4-6 años sombra",
-                                    "8-10 años luz",
-                                    "8-10 años sombra")),
+lgd2 <- Legend(labels = c("4-6 años luz",
+                          "4-6 años sombra",
+                          "8-10 años luz",
+                          "8-10 años sombra"),
                legend_gp = gpar(fill = cols_species),
-               title = "Grupo", ncol = 1)
+               title = "Grupo", ncol = 2)
 # Metabolite class Legend
 lgd3 <- Legend(labels = c(unique(hm_fdata$Superclass)) ,
                legend_gp = gpar(fill = cols_metclass), 
-               title = "Superclase", ncol = 2)
+               title = "Superclase", ncol = 3)
 
 ```
 
-ComplexHeatmap plot
+Gráfico del mapa de calor.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, error=FALSE}
 
-set.seed(1540)
+set.seed(810)
 # Converting to ggplot
 gg_heatmap <- grid.grabExpr(draw(hm_plot))
 gg_heatmap <- ggpubr::as_ggplot(gg_heatmap)
@@ -500,15 +504,15 @@ gg_legend_fn <- ggpubr::as_ggplot(gg_legend)
 # Heatmap plot
 gcms_hm <- plot_grid(gg_legend_fn,
           gg_heatmap, ncol = 1,
-          rel_heights = c(0.195, 0.88))
+          rel_heights = c(0.10, 0.88))
 gcms_hm
 # Save heatmap plot
 ggsave(filename = "Result/GCMS/GCMS_Heatmap.jpeg", plot = gcms_hm,
-      width = 5, height = 3, units = "in", dpi = 300, scale = 1.7)
+      width = 5.5, height = 4.7, units = "in", dpi = 300, scale = 1.7)
 
 ```
 
-Finish a record.
+Historial de las funciones "notame" usadas.
 
 ```{r}
 
